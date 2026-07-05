@@ -30,17 +30,25 @@ Nhiệm vụ của bạn:
 3. Cách xưng hô: Hãy xưng hô thân thiện, cởi mở, gọi người dùng là 'Đạt' hoặc 'bạn' và xưng 'tôi'. Hãy nói chuyện như một người anh em đam mê công nghệ tư vấn cho nhau, ngắn gọn, súc tích, đi thẳng vào vấn đề, không dài dòng văn tự.
 """
 
-# Khởi tạo model Gemini 1.5 Flash bản nâng cấp ổn định nhất
+# Khởi tạo model Gemini 1.5 Flash
 model = genai.GenerativeModel(
     model_name="models/gemini-1.5-flash-latest",
     system_instruction=system_prompt
 )
 
-# Khởi tạo lịch sử chat nếu chưa có
-if "messages" not in st.session_state:
+# Khởi tạo lịch sử chat ban đầu
+def init_chat():
     st.session_state.messages = [
-        {"role": "assistant", "content": "Chào Đạt! Tôi là AI chuyên gia build PC đây. Đạt đang có ngân sách khoảng bao nhiêu và nhu cầu dùng làm gì (chơi game gì, code phần mềm gì...) để tôi lên cấu hình tối ưu nhất?"}
+        {"role": "assistant", "content": "Chào Đạt! Tôi là AI chuyên gia build PC đây. Đạt đang có ngân sách khoảng bao nhiêu và nhu cầu dùng làm gì để tôi lên cấu hình tối ưu nhất?"}
     ]
+
+if "messages" not in st.session_state:
+    init_chat()
+
+# Thêm nút Xóa lịch sử ở góc màn hình để cứu hộ khi bị kẹt lỗi cache
+if st.sidebar.button("🔄 Làm mới/Xóa lịch sử Chat"):
+    init_chat()
+    st.rerun()
 
 # Hiển thị các tin nhắn cũ
 for msg in st.session_state.messages:
@@ -59,11 +67,12 @@ if user_input := st.chat_input("Nhập nhu cầu của bạn ở đây..."):
         response_placeholder = st.empty()
         
         try:
-            # Chuyển đổi lịch sử chat sang định dạng Gemini hiểu
+            # Chỉ lấy các tin nhắn hợp lệ (user hoặc assistant thực sự), bỏ qua tin nhắn lỗi hệ thống
             formatted_history = []
             for m in st.session_state.messages[:-1]:
-                role = "user" if m["role"] == "user" else "model"
-                formatted_history.append({"role": role, "parts": [m["content"]]})
+                if m["role"] in ["user", "assistant"]:
+                    role = "user" if m["role"] == "user" else "model"
+                    formatted_history.append({"role": role, "parts": [m["content"]]})
             
             chat = model.start_chat(history=formatted_history)
             response = chat.send_message(user_input, stream=True)
