@@ -30,9 +30,9 @@ Nhiệm vụ của bạn:
 3. Cách xưng hô: Hãy xưng hô thân thiện, cởi mở, gọi người dùng là 'Đạt' hoặc 'bạn' và xưng 'tôi'. Hãy nói chuyện như một người anh em đam mê công nghệ tư vấn cho nhau, ngắn gọn, súc tích, đi thẳng vào vấn đề, không dài dòng văn tự.
 """
 
-# Khởi tạo model Gemini 1.5 Flash (Đã sửa đường dẫn thành models/)
+# Khởi tạo model Gemini 1.5 Flash bản nâng cấp ổn định nhất
 model = genai.GenerativeModel(
-    model_name="models/gemini-1.5-flash-latest",
+    model_name="gemini-1.5-flash-latest",
     system_instruction=system_prompt
 )
 
