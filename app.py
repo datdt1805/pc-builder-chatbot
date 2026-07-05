@@ -32,7 +32,7 @@ Nhiệm vụ của bạn:
 
 # Khởi tạo model Gemini 1.5 Flash
 model = genai.GenerativeModel(
-    model_name="models/gemini-1.5-flash-latest",
+    model_name="models/gemini-2.5-flash",
     system_instruction=system_prompt
 )
 
